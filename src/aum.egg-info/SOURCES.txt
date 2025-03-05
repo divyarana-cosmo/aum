@@ -1,0 +1,17 @@
+AUTHORS
+COPYING
+README.md
+setup.py
+src/cosmology.cpp
+src/cosmology.i
+src/cosmology.py
+src/gauleg.cpp
+src/haloes.cpp
+src/hod.cpp
+src/hod.i
+src/hod.py
+src/powerspectrum.cpp
+src/aum.egg-info/PKG-INFO
+src/aum.egg-info/SOURCES.txt
+src/aum.egg-info/dependency_links.txt
+src/aum.egg-info/top_level.txt
