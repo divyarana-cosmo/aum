@@ -2,11 +2,13 @@
 #define HOD_H
 
 #ifndef TINK
-#define TINK 0
+
+#define TINK 5
 #endif
 
 #ifndef OFFNEW
-#define OFFNEW 0
+#define OFFNEW 1
+//#define OFFNEW 0
 #endif
 
 #include "cosmology.h"
@@ -16,6 +18,7 @@
 #include <gsl/gsl_randist.h>
 //Halo occupation distribution function
 //Derived from the class cosmology.
+
 
 struct phi_params
 {
@@ -48,7 +51,12 @@ struct hodpars
 {
     // HOD parameters
     double Mmin,siglogM,Msat,alpsat,Mcut;
-
+    //divya's addition
+    double logM0, logM1, alpha, beta, sig0, b0, b1, b2, eta, alpha_15;
+    double logMa, logMb;
+    // dibbo's addition for richness-luminosity depn
+    double logR0, logR1, alphaR, betaR, sigR;
+    double logRa, logRb;
     //
     double fac,csbycdm;
 
@@ -177,8 +185,6 @@ class hod : public cosmology
 
     hodpars hodp;
 
-    bool miyatake21switch;
-
     public:
     hod(cosmo, hodpars);
     hod();
@@ -239,7 +245,6 @@ class hod : public cosmology
 
     // Set halo exclusion option
     void sethalo_exc(bool);
-    void setMiyatake21_switch(bool);
 
     // Set central offset parameters, default zero off-centering
     void set_cen_offset_params(double fcen_off,double off_rbyrs);
@@ -260,6 +265,10 @@ class hod : public cosmology
     // Renew HOD and cosmology parameters
     void hod_renew(cosmo p, hodpars h);
     void hod_renew(hodpars h);
+    double gammaincfunc(double x, double a);
+    double ffunc(double x);
+    double beh_2013(double x);
+    double auxcen(double x, void * params); 
 
 #if TINK==2
     void init_Nc_spl(double xx[],double yy[],int Ncspl);
@@ -268,7 +277,7 @@ class hod : public cosmology
 
     // This option sets up output split by different one halo-two halo contributions, use with caution
     int whichopt;
-
+    void set_whichopt(int whichopt);
 
 };
 

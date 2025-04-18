@@ -1,4 +1,5 @@
 #include "hod.h"
+
 ///Halo occupation distribution function
 ///Derived from the class cosmology.
 
@@ -7,7 +8,6 @@ int hod::initialize_const(){
     hod_rmin=-4.6;
     hod_rmax= 4.0;
     hod_rmax_u= 2.1;
-
     return 1;
 }
 
@@ -38,16 +38,11 @@ hod::hod(cosmo p, hodpars h)
     bool_init_xigd=false;
     bool_init_xigg_bar=false;
     bool_init_xigg_barbar=false;
-    miyatake21switch=false;
     fKaiser=-99.0;
     off_rbyrs=0.0;
     fcen_off=0.0;
     inc_alp=0.0;
     inc_xM=12.0;
-#if TINK==2
-    bool_init_nc=false;
-    bool_init_ns=false;
-#endif
 }
 
 hod::hod()
@@ -81,24 +76,19 @@ hod::hod()
     bool_init_xigd=false;
     bool_init_xigg_bar=false;
     bool_init_xigg_barbar=false;
-    miyatake21switch=false;
     fKaiser=-99.0;
     off_rbyrs=0.0;
     fcen_off=0.0;
     inc_alp=0.0;
     inc_xM=12.0;
-#if TINK==2
-    bool_init_nc=false;
-    bool_init_ns=false;
-#endif
 }
 
 void hod::sethalo_exc(bool mark){
     halo_exc=mark;
 }
 
-void hod::setMiyatake21_switch(bool mark){
-    miyatake21switch=mark;
+void hod::set_whichopt(int mark){
+    whichopt=mark;
 }
 
 #if TINK==1
@@ -233,6 +223,147 @@ double hod::nsat(double xm)
     double res=pow(pow(10.,xm-hodp.Msat),hodp.alpsat);
     return res;
 }
+#elif TINK==5
+//part added by dibbo to get the csmf
+//
+double hod::ncen(double xm)
+{
+    double logMc = hodp.logM0 + hodp.alpha * (xm - hodp.logM1) - (hodp.alpha - hodp.beta) * log10(1 + pow(10,(xm - hodp.logM1)));
+    //double logMc = hodp.logM0 + (hodp.alpha + hodp.beta) * (xm - hodp.logM1) - hodp.beta * log10(1 + pow(10,(xm - hodp.logM1)));
+
+    double a = (hodp.logMa - logMc)/(pow(2,0.5)*hodp.sig0);
+    double b = (hodp.logMb - logMc)/(pow(2,0.5)*hodp.sig0);
+    double res = (gsl_sf_erf(b) - gsl_sf_erf(a))/2.0;
+    return res;
+}
+
+double hod::gammaincfunc(double x, double a)
+{
+    double q = gsl_sf_gamma_inc_Q(a+1, x);
+    double gamm = exp(gsl_sf_lngamma(a+1));
+    return (q*gamm - pow(x, a)*exp(-x))/a;
+    
+}
+
+///Average number of satellite galaxies in a halo of mass m
+double hod::nsat(double xm)
+{
+    double logMs = hodp.logM0 + hodp.alpha * (xm - hodp.logM1) - (hodp.alpha - hodp.beta) * log10(1 + pow(10,(xm - hodp.logM1))) - 0.25;
+
+    //double logphis  = hodp.b0 + hodp.b1*(xm-12) + hodp.b2*pow((xm-12),2); 
+    double logphis  = hodp.b0 + hodp.b1*(xm-13) + hodp.b2*pow((xm-13),2); 
+    double ta = pow(10,(hodp.logMa - logMs)*2);
+    double tb = pow(10,(hodp.logMb - logMs)*2);
+    double nfac = pow(10,logphis)/2;
+    double a = (hodp.alpsat+ hodp.eta*(xm-15) + 1)/2;
+    //double a = (hodp.alpsat + 1)/2;
+    double res = nfac *(gammaincfunc(ta,a) - gammaincfunc(tb,a));
+    return res;
+}
+
+#elif TINK==6
+//part added by dibbo to get the csmf using behroozi_2013
+//
+
+double hod::ffunc(double x)
+{
+    double delta = hodp.beta;
+    double gamma = hodp.alpsat;
+    double res = -log(pow(10,hodp.alpha*x) + 1) + delta * pow(log(1+exp(x)),gamma)/(1 + exp(pow(10,-x)));
+    return res;
+}    
+
+
+double hod::beh_2013(double xm)//behrozzi 2013 SMHM
+{
+    xm = xm - log10(geth()); //behrozzi units in Msun, so conversion required
+    double logeps = hodp.logM0;    
+    double logMc = logeps + hodp.logM1 +ffunc(xm - hodp.logM1) - ffunc(0);
+    logMc = logMc + 2*log10(geth());//behrozzi units in Msun, so conversion required
+
+    return logMc;
+}    
+
+
+double hod::ncen(double xm)
+{
+    double logMc = beh_2013(xm);
+    double a = (hodp.logMa - logMc)/(pow(2,0.5)*hodp.sig0);
+    double b = (hodp.logMb - logMc)/(pow(2,0.5)*hodp.sig0);
+    double res = (gsl_sf_erf(b) - gsl_sf_erf(a))/2.0;
+    return res;
+}
+
+
+double hod::gammaincfunc(double x, double a)
+{
+    //double a = (hodp.alpsat+1.)/2.;
+    //std::cout<<"here_beh\n";    
+    double q = gsl_sf_gamma_inc_Q(a+1, x);
+    double gamm = exp(gsl_sf_lngamma(a+1));
+    return (q*gamm - pow(x, a)*exp(-x))/a;
+}
+
+///Average number of satellite galaxies in a halo of mass m
+double hod::nsat(double xm)
+{
+    double logMs =  beh_2013(xm)- 0.25; 
+    double logphis  = hodp.b0 + hodp.b1*(xm-13) + hodp.b2*pow((xm-13),2); 
+    //double logphis  = hodp.b0 + hodp.b1*(xm-12) + hodp.b2*pow((xm-12),2); 
+    double ta = pow(10,(hodp.logMa - logMs)*2);
+    double tb = pow(10,(hodp.logMb - logMs)*2);
+    double nfac = pow(10,logphis)/2;
+    double a = (hodp.alpha_15 + hodp.eta*(xm-15) + 1)/2;
+    //double a = (hodp.alpsat + 1)/2;
+    double res = nfac *(gammaincfunc(ta,a) - gammaincfunc(tb,a));
+    //printf("%lg %lg \n",xm,res);
+    //double res = nfac;//*(gsl_sf_gamma_inc(a,ta) - gsl_sf_gamma_inc(a,tb));
+    return res;
+}
+
+#elif TINK==7
+//part added by dibbo to get the conditional luminosity-richness functional for galaxy groups
+double hod::auxncen(double x, void * params)
+{
+    double xm = *(double *) params;
+    double logMc = hodp.logM0 + hodp.alpha * (xm - hodp.logM1) - (hodp.alpha - hodp.beta) * log10(1 + pow(10,(xm - hodp.logM1)));
+    double q = pow((x-logMc),2)/(2*pow(hodp.sig0,2));
+    double gamm = exp(-q)/(pow(2,0.5)*hodp.sig0);
+    
+    double logRc = hodp.logR0 + hodp.alphaR * (xm - hodp.logR1) - (hodp.alphaR - hodp.betaR) * log10(1 + pow(10,(xm - hodp.logR1)));
+    double codmean = logRc + hodp.corr_coeff*(hodp.sigR/hodp.sig0)*(x-logMc);
+    double u = (hodp.logRa-codmean)/(pow(2,0.5)*hodp.sigR*pow(1-hodp.corr_coeff*hodp.corr_coeff,0.5));
+    double v = (hodp.logRb-codmean)/(pow(2,0.5)*hodp.sigR*pow(1-hodp.corr_coeff*hodp.corr_coeff,0.5));
+    double res = (gsl_sf_erf(v) - gsl_sf_erf(u))/2.0;
+
+    return res*gamm;
+}
+
+double hod::ncen(double xm)
+{
+    double result, error;
+    result=error=0.0;
+
+    gsl_function F;
+    F.function = &(auxncen);
+    F.params = &xm;
+
+    gsl_integration_workspace * w = gsl_integration_workspace_alloc (1000);
+    gsl_error_handler_t *oldhand=gsl_set_error_handler_off();
+    int status0=gsl_integration_qags (&F, hodp.logMa, hodp.logMb, 0, 1.e-3, 1000, w, &result, &error);
+    gsl_integration_workspace_free (w);
+    if(status0!=0){
+        printf("# Problems in convergence, ncen: xm:%e\n", xm);
+    }
+    double res = result;
+    return res;
+}
+
+///Average number of satellite galaxies in a halo of mass m
+double hod::nsat(double xm)
+{
+    return 1.E-30;
+}
 #else
 // This can use the Martin White prescription from White et al. 2012
 // White -> This model
@@ -244,34 +375,50 @@ double hod::nsat(double xm)
 ///Average number of central galaxies in a halo of mass m
 double hod::ncen(double xm)
 {
-    double arg=(xm-hodp.Mmin)/hodp.siglogM;
-    double res=0.5*(1+gsl_sf_erf(arg));
+    //double arg=pow((pow(10,xm)- pow(10,hodp.Mmin)),2)/(2*pow(hodp.siglogM,2));//forcing normal to delta function
+    //printf("cen hod,%s\n",xm);
+    //double res= exp(-arg)/(pow(2*M_PI,0.5)*hodp.siglogM);//Mandelbaumm_2005_HOD https://arxiv.org/pdf/astro-ph/0511164.pdf
+    double arg=pow((xm-hodp.Mmin),2)/(2*pow(hodp.siglogM,2));
+    double res= exp(-arg)/(pow(2*M_PI,0.5)*hodp.siglogM); //0.5*(1+gsl_sf_erf(arg));
     double inc=1.0;
     if(xm<inc_xM){
         inc=1.0+inc_alp*(xm-inc_xM);
         if(inc>1.0)inc=1.0; // Guarantees the code works even if inc_alp is negative, effectively ignoring inc_alp in that case
         if(inc<0.0)inc=0.0; // Guarantees the code works even if inc_alp is negative, effectively ignoring inc_alp in that case
     }
-    return res*inc;
+    return  res;
+    //return res*inc;
 }
 
 ///Average number of satellite galaxies in a halo of mass m
 double hod::nsat(double xm)
 {
-    //if(xm<hodp.Mcut||xm<hodp.Mmin){
+    //printf("sat hod\n");
+    //if(pow(10,xm)> 3*pow(10,hodp.Mmin)){ //Mandelbaumm_2005 HOD - https://arxiv.org/pdf/astro-ph/0511164.pdf
+    //    return hodp.alpsat * pow(10,(xm-hodp.Mmin - log10(3.0)));
+    //}else{
+    //    return  hodp.alpsat * pow(10,1.5*(xm-hodp.Mmin-log10(3.0)));
+    //}
+    
+    if(xm<hodp.Mcut||xm<hodp.Mmin){
     if(xm<hodp.Mcut){
-        return 0;
+        return 1.E-30;
     }else{
-        double arg=(xm-hodp.Mmin)/hodp.siglogM;
-        double res=0.5*(1+gsl_sf_erf(arg));
+        double arg=pow((xm-hodp.Mmin),2)/(2*pow(hodp.siglogM,2));
+        double res= exp(-arg)/(pow(2*M_PI,0.5)*hodp.siglogM); //0.5*(1+gsl_sf_erf(arg));
+        //double arg=(xm-hodp.Mmin)/hodp.siglogM;
+        //double res=0.5*(1+gsl_sf_erf(arg));
         double inc=1.0;
         if(xm<inc_xM){
             inc=1.0+inc_alp*(xm-inc_xM);
             if(inc>1.0)inc=1.0; // Guarantees the code works even if inc_alp is negative, effectively ignoring inc_alp in that case
         }
-        res=res*inc;
-        res=res*pow(pow(10.,xm-hodp.Msat)-pow(10.,hodp.Mcut-hodp.Msat),hodp.alpsat);
+        //res=res*inc;
+
+        res=pow(pow(10.,xm-hodp.Msat)-pow(10.,hodp.Mcut-hodp.Msat),hodp.alpsat);
+        //res=res*pow(pow(10.,xm-hodp.Msat)-pow(10.,hodp.Mcut-hodp.Msat),hodp.alpsat);
         return res;
+    }
     }
 }
 #endif
@@ -495,6 +642,7 @@ double hod::Pk_gg_gd_he(double z)
 
     // Central satellite fractions
     double fcen=totNc/(totNc+totNs);
+    //printf("%le %le\n",totNc, totNs);
     double fsat=1.-fcen;
     if(fcen>1.0){
         printf("Error in fcen: %e %e %e %e\n",fcen,fsat,totNc,totNs);
@@ -513,6 +661,7 @@ double hod::Pk_gg_gd_he(double z)
         mdep_2hs_2[i]=mdep_2hs_2[i]/totNs;
     }
     //exit(101);
+    std::cout<<"shjrgksfdkja :"<<bool_initQk<<std::endl;
 
     if(!bool_initQk){
         initQk(z,r200);
@@ -538,7 +687,9 @@ double hod::Pk_gg_gd_he(double z)
 /// Note fcen_off in this new parameterization is not used, off_rbyrs is in units of rs or 100 hinv kpc
             //uk_cen[i]=exp(-pow(karr[kk]*off_rbyrs*r200[i]/c200[i],2.)/2.);
             //uk_cen[i]=exp(-pow(karr[kk]*off_rbyrs*0.1,2.)/2.);
-            uk_cen[i]=1.0-fcen_off+fcen_off*exp(-pow(karr[kk]*off_rbyrs*0.10,2.)/2.);
+            uk_cen[i]=1.0-fcen_off+fcen_off*exp(-pow(karr[kk]*off_rbyrs*r200[i],2.)/2.);
+            //printf("offcen set\n");
+            //uk_cen[i]=1.0-fcen_off+fcen_off*exp(-pow(karr[kk]*off_rbyrs*0.10,2.)/2.);
 #else
             if(off_rbyrs==0.0 || fcen_off==0.0){
                 uk_cen[i]=1.0;
@@ -549,7 +700,6 @@ double hod::Pk_gg_gd_he(double z)
 
             //printf("%f %f %f:\n",karr[k],r200[i],c200[i]);
             uk_d[i]=ukinterp(karr[kk]*r200[i]/c200[i], c200[i]);
-            //fprintf(stderr, "uk_d: %le %le %le \n", karr[kk]*r200[i]/c200[i], c200[i], uk_d[i]);
             //printf("DEBUG: %e %e %e \n",karr[k]*r200[i]/c200[i], c200[i],uk_d[i]);
 
             if(hodp.csbycdm==1.0){
@@ -568,16 +718,8 @@ double hod::Pk_gg_gd_he(double z)
             //exit(101);
 
             // Now the integrals for the 1 halo term
-            if (miyatake21switch){
-                double avNcen = ncen(x9_16[i]);
-                if (avNcen>0){
-		    int_1hcs+=mdep_1hcs[i]*uk_s[i]*uk_cen[i]/ncen(x9_16[i]); /// --> Change here Divide by ncen(M)
-		    int_1hss+=mdep_1hss[i]*pow(uk_s[i],2.)/ncen(x9_16[i]);  /// --> Change here Divide by ncen(M)
-                }
-            }else{
-		int_1hcs+=mdep_1hcs[i]*uk_s[i]*uk_cen[i];
-		int_1hss+=mdep_1hss[i]*pow(uk_s[i],2.);  
-            }
+            int_1hcs+=mdep_1hcs[i]*uk_s[i]*uk_cen[i];
+            int_1hss+=mdep_1hss[i]*pow(uk_s[i],2.);
             if(fgm_m0<0.0){
                 int_1hcd+=mdep_1hcd[i]*uk_d[i]*uk_cen[i];
                 int_1hsd+=mdep_1hsd[i]*uk_s[i]*uk_d[i];
@@ -655,7 +797,6 @@ double hod::Pk_gg_gd_he(double z)
         //std::cout<<whichopt<<" whichopt is";
         if(whichopt==0){
             Pk_gg[kk]=2.0*fcen*fsat*P_gg_1hcs+fsat*fsat*P_gg_1hss+fcen*fcen*P_gg_2hcc+2.0*fcen*fsat*P_gg_2hcs+fsat*fsat*P_gg_2hss;
-            //fprintf(stderr, "%le %le %le %le %le %le %le %le\n", karr[kk], fcen, fsat, P_gg_1hcs, P_gg_1hss, P_gg_2hcc, P_gg_2hcs, P_gg_2hss);
         }else{
             Pk_gg[kk]=0.0;
             if(whichopt==1){
@@ -704,7 +845,7 @@ double hod::Pk_gg_gd_he(double z)
 	    if(verbose)
 		printf("%e %e %e\n",xx[kk],Pk_gg[kk],Pk_gd[kk]);
 	    kk++;
-            //printf("%d %le %le\n",k,Pk_gg[k],Pk_gd[k]);
+            //printf("%d %le\n",k,Pk_gd[k]);
             //printf("%e %e %e\n",xx[k],yy[k],zz[k]);
         }
 
@@ -767,6 +908,7 @@ double hod::Pk_gg_gd_he(double z)
 void hod::set_cen_offset_params(double x, double y){
     fcen_off=x;
     off_rbyrs=y;
+    //printf("foff:%e roff:%e \n",fcen_off,off_rbyrs);
 }
 
 void hod::set_inc_params(double x, double y){
@@ -2402,6 +2544,7 @@ double hod::pspec_halomodel(double z){
     return 0;
 }
 
+
 void hod::hod_renew(hodpars h){
     // First free up all the memory associated with all splines
     hod_free();
@@ -2414,6 +2557,7 @@ void hod::hod_renew(hodpars h){
     }
 
 }
+
 
 void hod::hod_renew(cosmo p, hodpars h){
     // First free up all the memory associated with all splines
@@ -2481,4 +2625,3 @@ double hod::scale_dep_bias_crossr(double z, int rbins, double rr[], double bias[
     
     return 0;
 }
-
