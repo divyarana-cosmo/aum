@@ -3,7 +3,7 @@
 
 #ifndef TINK
 
-#define TINK 5
+#define TINK 7
 #endif
 
 #ifndef OFFNEW
@@ -19,6 +19,11 @@
 //Halo occupation distribution function
 //Derived from the class cosmology.
 
+struct auxncen_params
+{
+    hod *hptr;
+    double xm;
+};
 
 struct phi_params
 {
@@ -55,8 +60,11 @@ struct hodpars
     double logM0, logM1, alpha, beta, sig0, b0, b1, b2, eta, alpha_15;
     double logMa, logMb;
     // dibbo's addition for richness-luminosity depn
-    double logR0, logR1, alphaR, betaR, sigR;
+    double logR0, logM1_R, alphaR, betaR, sigR;
     double logRa, logRb;
+    
+    double corr_coeff;
+
     //
     double fac,csbycdm;
 
@@ -71,6 +79,11 @@ double dwp_kaiser(double x, void* params);
 double dxiggbarbar(double x, void* params);
 double dxiggbar(double x, void* params);
 
+#if TINK==7
+double auxncen(double x, void* params); 
+#endif
+
+//
 class hod : public cosmology
 {
     private:
@@ -261,15 +274,17 @@ class hod : public cosmology
     friend double dwp_kaiser(double x, void* params);
     friend double dxiggbarbar(double x, void* params);
     friend double dxiggbar(double x, void* params);
-
+#if TINK==7    
+    friend double auxncen(double x, void* params); 
+#endif    
     // Renew HOD and cosmology parameters
     void hod_renew(cosmo p, hodpars h);
     void hod_renew(hodpars h);
+#if TINK==5 || TINK==6
     double gammaincfunc(double x, double a);
     double ffunc(double x);
     double beh_2013(double x);
-    double auxcen(double x, void * params); 
-
+#endif    
 #if TINK==2
     void init_Nc_spl(double xx[],double yy[],int Ncspl);
     void init_Ns_spl(double xx[],double yy[],int Nsspl);

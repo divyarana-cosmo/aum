@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: aum
 Version: 1.0rc0
 Summary: A Unified Modelling scheme for galaxy abundance, galaxy clustering and galaxy-galaxy lensing
@@ -7,3 +7,8 @@ Author: Surhud More
 Author-email: surhud.more@ipmu.jp
 License-File: COPYING
 License-File: AUTHORS
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: summary

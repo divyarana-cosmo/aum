@@ -231,8 +231,6 @@ class cosmology
     double fgm_m0;
     double fgm_slp;
 
-    /// Dark emu correction to Tinker bias
-    bool darkemu;
 
     /// Private functions
     void initialize();          //Initializations
@@ -425,7 +423,6 @@ class cosmology
         double Delta_crit(double z);  //Delta_crit(z), Bryan and Norman '98
 
 	void set_optmf(int opt); // Set the mass function option
-	void set_takahashi(bool opt); // Set the Takahashi correction option
 
         // Power spectrum calculations
         double Delta2_L_num(double k,double z);     // Numerical \Delta^2(k) Power spectrum, k should be in units of h Mpc^{-1} wrapper
@@ -436,7 +433,6 @@ class cosmology
 
 	// Mass and bias function wrappers
         double nofm(double M,double z);
-        double MF_TI09(double M, double z, double Deltac);
         double bias(double M,double z);
 	
 	// Variance related functions
@@ -505,13 +501,8 @@ class cosmology
     double getcDeltap_from_cDelta(double cDelta, double Delta, double Deltap);
 
     double bias_TI10_wDelta(double M, double z, double Delta);
-    double MF_Evrard(double,double);       // Evrard et al. 2002 mass function
-    double MF_Jenkins(double,double);       // Jenkins et al. mass function
 
-    // printQk
-    void printQk(double);
-
-    void setdarkemu(bool);
+    double MF_TI09_500c(double M, double z);
 
 };
 
