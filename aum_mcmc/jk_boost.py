@@ -25,7 +25,11 @@ for bb,ii in enumerate(range(1,nbins+1)):
     rry1jk = dfdict.Sumwls_by_sumwl.values
 
     bst = y1jk*1.0/rry1jk  #jackknife regions vise boost param
+<<<<<<< HEAD
     print(ii, np.shape(y1jk), np.shape(rry1jk))
+=======
+    print ii, np.shape(y1jk), np.shape(rry1jk)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     x = np.unique(xjk)
     njacks = int(len(xjk)/len(x))
     y1 = 0.0*x

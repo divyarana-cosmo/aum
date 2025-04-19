@@ -33,7 +33,11 @@ logMb = ab2loglum(m1)
 logMa = ab2loglum(m2)
 
 from sn_mcmc_csmf import *
+<<<<<<< HEAD
 print(logMa,logMb)
+=======
+print logMa,logMb
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
  #     logM0, logM1, gamma1, gamma2, sig0, b0, b1, b2, alpsat, cfac, poff, roff     , ap = x
 
 aum = init_aum()

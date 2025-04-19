@@ -89,7 +89,11 @@ def n_eff(mat):
 
     mat = np.dot(ic_prior, cov)
     neff = p - np.trace(mat)
+<<<<<<< HEAD
     print((p,neff))
+=======
+    print(p,neff)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     return neff
 
 
@@ -109,7 +113,11 @@ def texit(chn=chn):
         med = np.median(dat[:,ii])
         perr = np.percentile(dat[:,ii],84) - med
         merr = med - np.percentile(dat[:,ii],16)
+<<<<<<< HEAD
         print(('\t %s & $%2.2f^{+%2.2f}_{-%2.2f} \\vspace{0.1cm} $\\\\'%(lab[ii], med, perr, merr)))
+=======
+        print('\t %s & $%2.2f^{+%2.2f}_{-%2.2f} \\vspace{0.1cm} $\\\\'%(lab[ii], med, perr, merr))
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     return 0
 
 
@@ -172,7 +180,11 @@ def pltsigdata(ii,bb):
     ymin1 = np.percentile(y,2.5,axis=0)
     ymax1 = np.percentile(y,97.5,axis=0)
     
+<<<<<<< HEAD
     print(len(uqr), len(ymin1), x0, x1, len(pred[0,:]))
+=======
+    print len(uqr), len(ymin1), x0, x1, len(pred[0,:])
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     ax.fill_between(uqr, ymin1, ymax1, color='#52aae7', alpha = 0.45, zorder=1) # 95 percentile
     ax.fill_between(uqr, ymin0, ymax0, color='#1f77b4', alpha = 0.45, zorder=2) # 68 percentile
     
@@ -254,7 +266,11 @@ def pltsigdata(ii,bb):
     #if ii<10:
     #    ax.set_xticklabels([])
     print('logM0\tlogM1\tgamma1\tgamma2\tsig0\tb0\tb1\tb2\talpsat\tcfac\tap\tpoff\troff\tap\tchisq\n')    
+<<<<<<< HEAD
     print(bestp, np.min(pred[:,-1]))
+=======
+    print bestp, np.min(pred[:,-1])
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 
 #def get_fsat(b_min,b_max):
 #    #bins,fsat,fsaterr = np.loadtxt('/mnt/home/student/cdivya/github/weaklens_pipeline/DataStore/preetish/gama_equatorial_zleq_03_Mrpetro_cen_sat_iso_flags_gr_colour_reduced_sample.fits_fsat.dat', unpack=1)
@@ -320,7 +336,11 @@ def pltsigdata(ii,bb):
        
 for ii,bb in enumerate(range(0,7)):
     pltsigdata(ii,bb)
+<<<<<<< HEAD
     print(bb)
+=======
+    print bb
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 
 texit()
 #get_fsat(0,7)

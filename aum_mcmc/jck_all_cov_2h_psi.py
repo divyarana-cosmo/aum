@@ -15,7 +15,11 @@ for i in range(3,13):
 
 
 njacks = len(np.unique(df['5'][:,-1]))
+<<<<<<< HEAD
 print(njacks)
+=======
+print njacks
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 #input file readingi
 df_ds = {};df_r12 = {}
 rdf_ds = {};rdf_r12 = {}
@@ -44,7 +48,11 @@ for ii in range(njacks):
         else:
             df_ds['%d'%ii] = np.concatenate((df_ds['%d'%ii],ds))
 
+<<<<<<< HEAD
 print('reading done')
+=======
+print 'reading done'
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 size = len(df_ds['2'])
 
 mean_m = np.zeros(size)
@@ -55,7 +63,11 @@ for i1 in range(size):
         sm += df_ds['%d'%i2][i1]
     mean_m[i1] =  sm/(1.0*njacks)
     
+<<<<<<< HEAD
 print('mean computed')
+=======
+print 'mean computed'
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 #segment for computing convariance matrix
 
 cov = np.zeros((size,size))
@@ -69,7 +81,11 @@ for i1 in range(size):
 
         cov[i1][i2] = (njacks - 1)*s1/(1.0*njacks) #covariance for jackknifes
         
+<<<<<<< HEAD
 print('writing to the file')
+=======
+print 'writing to the file'
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 cross_cof_matrix = np.matrix(cov)#cov
 
 #fname ='./re_full_jk_output_1/cov_w_rand_subs_no_boost.dat'

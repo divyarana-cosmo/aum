@@ -45,7 +45,11 @@ def plotc(n):
     mcen = np.loadtxt('./full_jk_fits_1/new_avg_mhcen_%d.dat'%n)
  
     if n>=8:
+<<<<<<< HEAD
        print("cutting chains")
+=======
+       print "cutting chains"
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
        chisq_cut = np.percentile(darkdata1.values[:,-1],70)
        chiidx  = (darkdata1.values[:,-1] < chisq_cut)
        mat = mat[chiidx,:]
@@ -104,7 +108,11 @@ def plotc(n):
     
 for i in range(1,13):
     plotc(i)
+<<<<<<< HEAD
     print(i)
+=======
+    print i
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 
 plt.tight_layout()
 plt.savefig('full_jk_fits_1/new_mstel_rels.png', dpi=300)

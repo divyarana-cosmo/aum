@@ -19,7 +19,11 @@ for bb,ii in enumerate(range(7)):
     logMstel = float(np.log10(np.mean(10**full_gal['logMstar_h2'][idx])))
     zred     = np.median(full_gal['z_tonry'][idx])
     
+<<<<<<< HEAD
     print(('%2.2f\t%2.2f\t%2.2f\t%2.2f\t%2.2f\n'%(logMa, logMb, logMstel, zred, sum(idx))))
+=======
+    print('%2.2f\t%2.2f\t%2.2f\t%2.2f\t%2.2f\n'%(logMa, logMb, logMstel, zred, sum(idx)))
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     dat0  = np.loadtxt('./sn_preet_gama_output_cosmo_zu15_full_revised/dsigma.dat_%d'%ii);
 
     ax = plt.subplot(3,4,bb+1)

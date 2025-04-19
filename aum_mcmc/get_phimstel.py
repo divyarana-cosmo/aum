@@ -106,7 +106,11 @@ if __name__ == "__main__":
         logM0, logM1, gamma1, gamma2, sig0, b0, b1, b2, alpsat, cfac, poff, roff , ap = chn[i,:13]
         val  = b0 + b1 * (mh-12) + b2 * (mh-12)**2
         mat[i,:] = val
+<<<<<<< HEAD
         print(i)
+=======
+        print i
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
  
     ymed  = np.percentile(mat,50,axis=0)
     ymin0 = np.percentile(mat,16,axis=0)

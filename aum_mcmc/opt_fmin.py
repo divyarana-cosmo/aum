@@ -177,7 +177,11 @@ def lnprob(x, data, icov, rbin, rsft):
         res = chisq
         #res = lp-chisq*0.5
     if chisq<0:
+<<<<<<< HEAD
         print('alert')
+=======
+        print 'alert'
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
         sys.exit(0)
     
     #print('logM0\tlogM1\talpha\tbeta\tsig0\tb0\tb1\tb2\talphas\tcfac\tpoff\troff\tchisq')
@@ -185,7 +189,11 @@ def lnprob(x, data, icov, rbin, rsft):
     #print(x,logMh,fsat,chisq)
     #print('blob is Del_sig, logMh, fsat, chisq')
     #print( 'size of blob=%d+%d+%d+%d'%(len(mod),len(logMh),len(fsat),len([chisq])))
+<<<<<<< HEAD
     print(res, np.isscalar(res))
+=======
+    print res, np.isscalar(res)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     return res#,blob
 
 def runchain(Ntotal,sampler,chainf,blobf,pos):
@@ -200,13 +208,21 @@ def runchain(Ntotal,sampler,chainf,blobf,pos):
         sys.stderr.flush()
  
         #posn,probn,staten = result;
+<<<<<<< HEAD
         for i in range(nwalkers):
+=======
+        for i in xrange(nwalkers):
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
             np.savetxt(fchain,posn[i],newline=' ');
             np.savetxt(fchain,[sampler.acceptance_fraction[i],-2.*probn[i]],newline=' ');
             np.savetxt(fblob,blobsn[i],newline=' ');
             np.savetxt(fchain,blnk,fmt='%s');
             np.savetxt(fblob,blnk,fmt='%s');
+<<<<<<< HEAD
         print(("Iteration number: %d of %d done"%(iterno,Ntotal)));
+=======
+        print ("Iteration number: %d of %d done"%(iterno,Ntotal));
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
         iterno=iterno+1;
         posnew=result[0];
 
@@ -247,7 +263,11 @@ if __name__ == "__main__":
 
     def _lnprob(x):
         res = lnprob(x, data, icov, rbin, rsft)
+<<<<<<< HEAD
         print(res, np.isscalar(res))
+=======
+        print res, np.isscalar(res)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
         return res
         
 
@@ -260,7 +280,11 @@ if __name__ == "__main__":
 
     samp = minimize(_lnprob , x0=x0)
 
+<<<<<<< HEAD
     print(samp.x)
+=======
+    print samp.x
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
  
    
 

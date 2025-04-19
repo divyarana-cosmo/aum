@@ -10,7 +10,11 @@ randpath = sys.argv[2]
 flist = glob('%s/dsigma.dat_*'%lenspath)
 
 nbins = len(flist)-1
+<<<<<<< HEAD
 print(nbins)
+=======
+print nbins
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 df={}
 rdf={}
 
@@ -21,7 +25,11 @@ for i in range(nbins):
 
 njacks = len(np.unique(df['0'][:,-1]))
 
+<<<<<<< HEAD
 print(njacks)
+=======
+print njacks
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 #input file reading
 df_ds = {};df_r12 = {}
 rdf_ds = {};rdf_r12 = {}
@@ -38,7 +46,11 @@ for ii in range(njacks):
         rr12 = rdf['%d'%jj][ridx,14]
         rds = rds/(1.0+rr12)
         
+<<<<<<< HEAD
         print(ii, jj, np.shape(ds))
+=======
+        print ii, jj, np.shape(ds)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
         ds = ds - rds #no boosted signal
         ds = ds[:10] # taking only first 10 bins
         if jj==0:
@@ -46,7 +58,11 @@ for ii in range(njacks):
         else:
             df_ds['%d'%ii] = np.concatenate((df_ds['%d'%ii],ds))
 
+<<<<<<< HEAD
 print('reading done')
+=======
+print 'reading done'
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 size = len(df_ds['2'])
 
 mean_m = np.zeros(size)
@@ -57,7 +73,11 @@ for i1 in range(size):
         sm += df_ds['%d'%i2][i1]
     mean_m[i1] =  sm/(1.0*njacks)
     
+<<<<<<< HEAD
 print('mean computed')
+=======
+print 'mean computed'
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 #segment for computing convariance matrix
 
 cov = np.zeros((size,size))
@@ -71,7 +91,11 @@ for i1 in range(size):
 
         cov[i1][i2] = (njacks - 1)*s1/(1.0*njacks) #covariance for jackknifes
         
+<<<<<<< HEAD
 print('writing to the file')
+=======
+print 'writing to the file'
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 cross_cof_matrix = np.matrix(cov)#cov
 
 fname ='%s/cov_w_rand_subs_no_boost_removed_last_bin.dat'%lenspath

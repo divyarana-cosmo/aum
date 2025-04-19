@@ -40,7 +40,11 @@ class Behroozi_2013a:
 
     def SHMRbeh(self, xmh,zz):
         nu, alp, delta, gamma, eps, xM1 = self.evolved_factors(zz)
+<<<<<<< HEAD
         print(self.evolved_factors(zz))
+=======
+        print self.evolved_factors(zz)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 
         xmstel=eps+xM1+self.fbeh12(xmh-xM1, nu, alp, delta, gamma)-self.fbeh12(0.0, nu, alp, delta, gamma);
         return xmstel;

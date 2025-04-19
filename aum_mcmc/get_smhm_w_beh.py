@@ -42,7 +42,11 @@ for i in range(len(chn[:,0])):
 
     val = beh_2013(p,mh)
     mat[i,:] = val
+<<<<<<< HEAD
     print(minchi,i)
+=======
+    print minchi,i
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 
 
 ax =  plt.subplot(2,2,1)

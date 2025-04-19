@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from mcmc_csmf import *
+<<<<<<< HEAD
 plt.rcParams['text.usetex'] = True
+=======
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 
 #x = [ 8.33706006, 12.96229595,  3.17938165,  0.1056266 ,  0.1710116 , 1.03681635,  1.64667524, -0.57131687, -1.46001744,  1.01156136, 0.38258081,  0.019641  ,  2.48176121]
 
@@ -20,6 +23,7 @@ roff = 0.1
 ap = 1
 x = [logM0, logM1, gamma1, gamma2, sig0, b0, b1, b2, alpsat, cfac, poff, roff , ap]
 
+<<<<<<< HEAD
 aum = init_aum()
 
 print(aum)
@@ -106,5 +110,93 @@ plt.savefig('test.png', dpi=200)
 #    #print lnprob(x, data, icov, rbin, rsftarr, logMaarr, logMbarr, logMstelarr, cnt)
 #
 #sys.exit()
+=======
+#aum = init_aum()
+
+
+bins, mstel_min, mstel_max, mstel_avg, z_mean, z_med = np.loadtxt("../DataStore/preetish/mstel_bins_gama.dat", unpack=True)
+
+rsftarr     = -1*np.ones(len(bins))
+logMaarr    = -1*np.ones(len(bins))
+logMbarr    = -1*np.ones(len(bins))
+logMstelarr = -1*np.ones(len(bins))
+
+#joint fit first collecting the measurements
+for i,bb in enumerate(range(5,12)):
+    idx = (bins==bb)
+    rsftarr[idx]     = z_med[idx]
+    logMaarr[idx]    = mstel_min[idx]
+    logMbarr[idx]    = mstel_max[idx]
+    logMstelarr[idx] = mstel_avg[idx]
+
+    dat  = np.loadtxt('./jk_preet_gama_output_cosmo_y08/dsigma.dat_%d'%bb)
+    rdat = np.loadtxt('./jk_preet_gama_rand_output_cosmo_y08/dsigma.dat_%d'%bb)
+
+    rbin = np.unique(dat[:,7])
+    y = 0.0*rbin
+    if i==0:
+        yy = dat[:,5]*(1.0/(1+dat[:,14])) - rdat[:,5]*(1.0/(1+rdat[:,14]))
+        data = 0.0*rbin
+        for jj,rr in enumerate(rbin):
+            idx = (dat[:,7]==rr)
+            y[jj] = np.mean(yy[idx])
+        data = y    
+    else:
+        yy = dat[:,5]*(1.0/(1+dat[:,14])) - rdat[:,5]*(1.0/(1+rdat[:,14]))
+        for jj,rr in enumerate(rbin):
+            idx = (dat[:,7]==rr)
+            y[jj] = np.mean(yy[idx])
+        data = np.concatenate((data,y))
+
+idx = (rsftarr>=0) & (logMaarr>=0) & (logMbarr>=0) & (logMstelarr>=0)
+rsftarr     = rsftarr[idx]     
+logMaarr    = logMaarr[idx]     
+logMbarr    = logMbarr[idx]    
+logMstelarr = logMstelarr[idx] 
+
+
+print 'number of bins = %d'%np.sum(idx)
+rbin = np.unique(dat[:,7])
+
+#then get the full covariance
+cov = np.loadtxt('./jk_preet_gama_output_cosmo_y08/cov_w_rand_subs_no_boost.dat',dtype=float,unpack=True)
+cov = cov[40:, 40:] #removing first 4 bins
+icov = np.linalg.inv(cov)
+
+for ii in range(5):
+    lnprob(x, data, icov, rbin, rsftarr, logMaarr, logMbarr, logMstelarr)
+    #print lnprob(x, data, icov, rbin, rsftarr, logMaarr, logMbarr, logMstelarr, cnt)
+
+sys.exit()
+
+#print aum
+#plt.subplot(2,2,1)
+#def predsig(zred):
+#
+#    logMa = 10.2
+#    logMb = 10.5
+#    logMstel = 10.37
+#    
+#    rbin = np.logspace(np.log10(0.02), np.log10(2), 20)
+#    ans  = esd(x, rbin, zred, logMa, logMb, logMstel, aum=aum)[0]
+#    print ans    
+#    plt.plot(rbin, ans, label='z=%2.2f'%zred)
+#
+##plt.plot(rbin, model(x, rbin, rsft, logMa, logMb, logMstel, whichopt=1), label='1h-c')
+##plt.plot(rbin, model(x, rbin, rsft, logMa, logMb, logMstel, whichopt=2), label='1h-s')
+##plt.plot(rbin, stellar(ap, logMstel, rbin), label='2h')
+#zred = np.linspace(0.04,0.25, 5)
+#for zz in zred:
+#    predsig(zz)
+#    
+#plt.legend()
+#plt.xlabel(r'$R$')
+#plt.ylabel(r'$\Delta \Sigma$')
+#
+#plt.ylim(1,50)
+#plt.xscale('log')
+#plt.yscale('log')
+#plt.savefig('test.png', dpi=200)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 
 

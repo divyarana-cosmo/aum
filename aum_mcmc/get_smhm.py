@@ -26,7 +26,11 @@ except:
         logM0, logM1, gamma1, gamma2 = chn[i,:4]
         val = logM0 + gamma1*(mh - logM1)-(gamma1 - gamma2)*np.log10(1+10**(mh-logM1))
         mat[i,:] = val
+<<<<<<< HEAD
         print(i)
+=======
+        print i
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     
     ymed  = np.percentile(mat,50,axis=0)
     ymin0 = np.percentile(mat,16,axis=0)

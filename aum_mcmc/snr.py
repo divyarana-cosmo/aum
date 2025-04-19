@@ -49,5 +49,9 @@ icov = hartlap_factor*icov
 
 Delta = data
 chisq = np.dot(Delta, np.dot(icov, Delta))
+<<<<<<< HEAD
 print(np.sqrt(chisq))
+=======
+print np.sqrt(chisq)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 

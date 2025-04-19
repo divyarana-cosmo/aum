@@ -68,7 +68,11 @@ def pltjk(n):
     #randrel = np.loadtxt('./random_1/dsigma.dat_%d' % (n))
     x = np.unique(xjk)
     njacks = int(len(xjk)/len(x))
+<<<<<<< HEAD
     print(njacks)
+=======
+    print njacks
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     y = 0.0*x
     yerr = 0.0*y
     y1 = 0.0*x

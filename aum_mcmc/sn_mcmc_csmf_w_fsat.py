@@ -203,12 +203,21 @@ def lnprob(x, data, datafsat, icov, icovfsat, rbin, rsftarr, logMaarr, logMbarr,
         res = lp-chisq*0.5
 
     if chisq<0:
+<<<<<<< HEAD
         print('alert')
         sys.exit(0)
     print('logM0\tlogM1\tgamma1\tgamma2\tsig0\tb0\tb1\tb2\talpsat\tcfac\tap\tpoff\troff\tap\tchisq')
     print((x,chisq))
     print('blob is Del_sig, logMh, fsat, chisq')
     print(( 'size of blob=%d+%d+%d+%d'%(len(mod),len(logMh),len(fsat),len([chisq]))))
+=======
+        print 'alert'
+        sys.exit(0)
+    print('logM0\tlogM1\tgamma1\tgamma2\tsig0\tb0\tb1\tb2\talpsat\tcfac\tap\tpoff\troff\tap\tchisq')
+    print(x,chisq)
+    print('blob is Del_sig, logMh, fsat, chisq')
+    print( 'size of blob=%d+%d+%d+%d'%(len(mod),len(logMh),len(fsat),len([chisq])))
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
      
     return res,blob
 
@@ -221,13 +230,21 @@ def runchain(Ntotal,sampler,chainf,blobf,pos):
     for result in sampler.sample(pos, iterations=Ntotal, storechain=0):
         posn,probn,staten,blobsn = result;
         #posn,probn,staten = result;
+<<<<<<< HEAD
         for i in range(nwalkers):
+=======
+        for i in xrange(nwalkers):
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
             np.savetxt(fchain,posn[i],newline=' ');
             np.savetxt(fchain,[sampler.acceptance_fraction[i],-2.*probn[i]],newline=' ');
             np.savetxt(fblob,blobsn[i],newline=' ');
             np.savetxt(fchain,blnk,fmt='%s');
             np.savetxt(fblob,blnk,fmt='%s');
+<<<<<<< HEAD
         print(("Iteration number: %d of %d done"%(iterno,Ntotal)));
+=======
+        print ("Iteration number: %d of %d done"%(iterno,Ntotal));
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
         iterno=iterno+1;
         posnew=result[0];
 
@@ -319,10 +336,17 @@ if __name__ == "__main__":
     p_roff     = np.random.uniform(0.0,0.2,nwalkers)
  
     #logM0, logM1, gamma1, gamma2, sig0, b0, b1, b2, alpsat, cfac, poff, roff , ap = x
+<<<<<<< HEAD
     p_0 = list(zip(p_logM0, p_logM1, p_gamma1, p_gamma2, p_sig0, p_b0, p_b1, p_b2, p_alpsat, p_cfac, p_poff, p_roff, p_ap))
 
     
     print(("Starting iteration, ndim is ",ndim));
+=======
+    p_0 = zip(p_logM0, p_logM1, p_gamma1, p_gamma2, p_sig0, p_b0, p_b1, p_b2, p_alpsat, p_cfac, p_poff, p_roff, p_ap)
+
+    
+    print ("Starting iteration, ndim is ",ndim);
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     Nburn=5000
     pos = runchain(Nburn,sampler,"./sn_preet_gama_output_cosmo_y08_full_revised_fits/burnfile.dat_w_zu15_fsat_unit_hartlap","./sn_preet_gama_output_cosmo_y08_full_revised_fits/burnpredfile.dat_w_zu15_fsat_unit_hartlap",p_0);
     

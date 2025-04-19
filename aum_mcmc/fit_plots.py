@@ -108,7 +108,11 @@ def pltsigdata(ii):
         idx = (dat[:,7]==rr)
         avgy[jj] = np.mean(y[idx])
         yerr[jj] = np.sqrt(njacks - 1) * np.std(y[idx])  
+<<<<<<< HEAD
     print(ii,yerr)
+=======
+    print ii,yerr
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     #if ii>=11:
     #    uqr = uqr[2:]
     #    avgy = avgy[2:]
@@ -122,7 +126,11 @@ def pltsigdata(ii):
     pred = pd.read_csv('./full_jk_fits_1/new_x9_16_off_predfile_%s.dat'%ii,delim_whitespace=True,header=None)
  
     if ii>=8:
+<<<<<<< HEAD
         print("cutting chains")
+=======
+        print "cutting chains"
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
         chisq_cut = np.percentile(pred.values[:,-1],70)
         idx  = (pred.values[:,-1] < chisq_cut)
         y = pred.values[idx,:len(uqr)]

@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
 import sys
+<<<<<<< HEAD
+=======
+sys.path.append("/mnt/csoft/tools/anaconda2/bin/python")
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 import numpy as np
 import pandas as pd
 import emcee
 import time
+<<<<<<< HEAD
 from schwimmbad import MPIPool
 
 import os
 sys.path.append("/net/dobbe/data2/github/aum/install/lib/python3.13/site-packages")
+=======
+from emcee.utils import MPIPool
+import os
+sys.path.append("/mnt/home/student/cdivya/github/aum-master/csmf_bosch_2013/lib/python2.7/site-packages")
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
 #import cosmology as cc
 import hod as h
 from scipy.integrate import quad
@@ -129,7 +139,11 @@ def lnprob(x, data, icov, rbin, rsftarr, logMaarr, logMbarr, logMstelarr):
     mod   = np.zeros(nbins*len(rbin))
     logMh = np.zeros(nbins)
     fsat  = np.zeros(nbins)
+<<<<<<< HEAD
     print("cnt  sdkjsahdkjhskas", cnt) 
+=======
+    print "cnt  sdkjsahdkjhskas", cnt 
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     if cnt==0:
         for bb in range(len(rsftarr)):
             aumdict['%d'%bb] = init_aum()
@@ -162,6 +176,7 @@ def lnprob(x, data, icov, rbin, rsftarr, logMaarr, logMbarr, logMstelarr):
         res = lp-chisq*0.5
 
     if chisq<0:
+<<<<<<< HEAD
         print('alert')
         sys.exit(0)
     # logM0, logM1, gamma1, gamma2, sig0, b0, b1, b2, alpsat, cfac, poff, roff , ap = x
@@ -169,6 +184,15 @@ def lnprob(x, data, icov, rbin, rsftarr, logMaarr, logMbarr, logMstelarr):
     print((x,chisq))
     print('blob is Del_sig, logMh, fsat, chisq')
     print(( 'size of blob=%d+%d+%d+%d'%(len(mod),len(logMh),len(fsat),len([chisq]))))
+=======
+        print 'alert'
+        sys.exit(0)
+    # logM0, logM1, gamma1, gamma2, sig0, b0, b1, b2, alpsat, cfac, poff, roff , ap = x
+    print('logM0\tlogM1\tgamma1\tgamma2\tsig0\tb0\tb1\tb2\talpsat\tcfac\tap\tpoff\troff\tap\tchisq')
+    print(x,chisq)
+    print('blob is Del_sig, logMh, fsat, chisq')
+    print( 'size of blob=%d+%d+%d+%d'%(len(mod),len(logMh),len(fsat),len([chisq])))
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
      
     return res,blob
 
@@ -184,13 +208,21 @@ def runchain(Ntotal,sampler,chainf,blobf,pos):
         sys.stderr.flush()
  
         #posn,probn,staten = result;
+<<<<<<< HEAD
         for i in range(nwalkers):
+=======
+        for i in xrange(nwalkers):
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
             np.savetxt(fchain,posn[i],newline=' ');
             np.savetxt(fchain,[sampler.acceptance_fraction[i],-2.*probn[i]],newline=' ');
             np.savetxt(fblob,blobsn[i],newline=' ');
             np.savetxt(fchain,blnk,fmt='%s');
             np.savetxt(fblob,blnk,fmt='%s');
+<<<<<<< HEAD
         print(("Iteration number: %d of %d done"%(iterno,Ntotal)));
+=======
+        print ("Iteration number: %d of %d done"%(iterno,Ntotal));
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
         iterno=iterno+1;
         posnew=result[0];
 
@@ -245,7 +277,11 @@ if __name__ == "__main__":
 
     
 
+<<<<<<< HEAD
     print('number of bins = %d'%np.sum(idx))
+=======
+    print 'number of bins = %d'%np.sum(idx)
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     rbin = np.unique(dat[:,7])
 
     #then get the full covariance
@@ -289,10 +325,17 @@ if __name__ == "__main__":
     p_poff     = np.random.uniform(0.0,1.0,nwalkers)
     p_roff     = np.random.uniform(0.0,0.2,nwalkers)
  
+<<<<<<< HEAD
     p_0 = list(zip(p_logM0, p_logM1, p_gamma1, p_gamma2, p_sig0, p_b0, p_b1, p_b2, p_alpsat, p_cfac, p_poff, p_roff, p_ap))
 
     
     print(("Starting iteration, ndim is ",ndim));
+=======
+    p_0 = zip(p_logM0, p_logM1, p_gamma1, p_gamma2, p_sig0, p_b0, p_b1, p_b2, p_alpsat, p_cfac, p_poff, p_roff, p_ap)
+
+    
+    print ("Starting iteration, ndim is ",ndim);
+>>>>>>> 2cb08947c4825a1e0e38de69838ff8bfaff35728
     Nburn=5000
     pos = runchain(Nburn,sampler,"./jk_preet_hsc_no_deblend_output_cosmo_y08_fits/burnfile.dat_bosch_2013_removed_first_3_bins_no_hartlap","./jk_preet_hsc_no_deblend_output_cosmo_y08_fits/burnpredfile.dat_bosch_2013_removed_first_3_bins_no_hartlap",p_0);
     
