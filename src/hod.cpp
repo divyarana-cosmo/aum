@@ -320,24 +320,38 @@ double hod::nsat(double xm)
     //double res = nfac;//*(gsl_sf_gamma_inc(a,ta) - gsl_sf_gamma_inc(a,tb));
     return res;
 }
-
 #elif TINK==7
 //part added by dibbo to get the conditional luminosity-richness functional for galaxy groups
-double hod::auxncen(double x, void * params)
+double auxncen(double x, void * params)
 {
-    double xm = *(double *) params;
-    double logMc = hodp.logM0 + hodp.alpha * (xm - hodp.logM1) - (hodp.alpha - hodp.beta) * log10(1 + pow(10,(xm - hodp.logM1)));
-    double q = pow((x-logMc),2)/(2*pow(hodp.sig0,2));
-    double gamm = exp(-q)/(pow(2,0.5)*hodp.sig0);
-    
-    double logRc = hodp.logR0 + hodp.alphaR * (xm - hodp.logR1) - (hodp.alphaR - hodp.betaR) * log10(1 + pow(10,(xm - hodp.logR1)));
-    double codmean = logRc + hodp.corr_coeff*(hodp.sigR/hodp.sig0)*(x-logMc);
-    double u = (hodp.logRa-codmean)/(pow(2,0.5)*hodp.sigR*pow(1-hodp.corr_coeff*hodp.corr_coeff,0.5));
-    double v = (hodp.logRb-codmean)/(pow(2,0.5)*hodp.sigR*pow(1-hodp.corr_coeff*hodp.corr_coeff,0.5));
-    double res = (gsl_sf_erf(v) - gsl_sf_erf(u))/2.0;
+    auxncen_params c1 = *(auxncen_params *)params;
+    hod *c2 = c1.hptr;  // c2 points to the hod object
+    double xm = c1.xm;
 
-    return res*gamm;
+    double logMc = c2->hodp.logM0 + c2->hodp.alpha * (xm - c2->hodp.logM1)
+                 - (c2->hodp.alpha - c2->hodp.beta) * log10(1 + pow(10, xm - c2->hodp.logM1));
+
+    //printf("answer logMc %e\n", logMc);
+    double q = pow((x - logMc), 2) / (2 * pow(c2->hodp.sig0, 2));
+    double gamm = exp(-q) / (sqrt(2.0*M_PI) * c2->hodp.sig0);
+
+    double logRc = c2->hodp.logR0 + c2->hodp.alphaR * (xm - c2->hodp.logM1_R)
+                 - (c2->hodp.alphaR - c2->hodp.betaR) * log10(1 + pow(10, xm - c2->hodp.logM1_R));
+
+    //printf("answer logRc %e\n", logRc);
+
+    double codmean = logRc + c2->hodp.corr_coeff * (c2->hodp.sigR / c2->hodp.sig0) * (x - logMc);
+    double denom = sqrt(2.0) * c2->hodp.sigR * sqrt(1 - c2->hodp.corr_coeff * c2->hodp.corr_coeff);
+    double u = (c2->hodp.logRa - codmean) / denom;
+    double v = (c2->hodp.logRb - codmean) / denom;
+
+    double res = (gsl_sf_erf(v) - gsl_sf_erf(u)) / 2.0;
+
+    //printf("answer result %e\n", res);
+    return res * gamm;
 }
+
+
 
 double hod::ncen(double xm)
 {
@@ -346,11 +360,19 @@ double hod::ncen(double xm)
 
     gsl_function F;
     F.function = &(auxncen);
-    F.params = &xm;
+    auxncen_params p;
+    p.hptr = this;
+    p.xm = xm;
+    F.params = &p;
 
+    //printf("its running\n");
     gsl_integration_workspace * w = gsl_integration_workspace_alloc (1000);
     gsl_error_handler_t *oldhand=gsl_set_error_handler_off();
-    int status0=gsl_integration_qags (&F, hodp.logMa, hodp.logMb, 0, 1.e-3, 1000, w, &result, &error);
+    double logMmin = hodp.logMa;
+    double logMmax = hodp.logMb;
+    int status0=gsl_integration_qags (&F, logMmin, logMmax, 0, 1.e-3, 1000, w, &result, &error);
+    
+    //printf("answer result %e\n", result);
     gsl_integration_workspace_free (w);
     if(status0!=0){
         printf("# Problems in convergence, ncen: xm:%e\n", xm);

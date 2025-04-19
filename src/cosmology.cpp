@@ -59,9 +59,6 @@ void cosmology::initialize()
     opt_ps_L=1;
     opt_ps_NL=1;
 
-    // Dark emulator correction to Tinker 2010 bias
-    darkemu = false;
-
     /// Initialize the time today
     t0=Time(0.0);
 
@@ -121,6 +118,7 @@ void cosmology::initialize()
 
     /// Get gauleg masses
     if(!mock){
+        //gauleg(12.0,16.0,x9_16,w9_16,N9_16);
         gauleg(9.0,16.0,x9_16,w9_16,N9_16);
     }else{
         /// Get gauleg masses for mock L250
@@ -160,6 +158,7 @@ cosmology::cosmology(cosmo p)
     xiNLzetamax=p.ximax;
     cfactor=p.cfac;
     initialize();
+    //verbose = true;
     if(verbose) std::cout<<"# Cosmo constructor 2 called\n";
 }
 
@@ -844,8 +843,4 @@ double cosmology::get_logrp(double x1, double x2, double x3, double y1, double y
     double cosang=x1*y1+x2*y2+x3*y3;
     if(cosang>1.0) return -100.0;
     return 0.5*log10(Chisq*(1.-cosang*cosang));
-}
-
-void cosmology::set_takahashi(bool opt){
-    takahashicorr=opt;
 }
