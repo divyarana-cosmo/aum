@@ -96,6 +96,43 @@ double cosmology::MF_TI10(double M, double z)
 
 }
 
+/// phenomenological model for assigning the density threshold over tinker 2010.
+/// Tinker et al. 2010 SO (200) mass function The mass function is in comoving coordinates.
+/// n(M) dM has the units of h^3 Mpc^{-3}
+double cosmology::MF_TI10_dens_dep(double M, double z, double overdense)
+{
+    if(z!=z_glob){
+	setnew_z(z);
+    }
+    if(!init_Tink){
+	initTinker(z);
+    }
+
+    double dc=1.686-overdense;
+    double sig=sqrt(varM_TH_num(M,z));
+    double xnu=dc/sig;
+
+    // Note that the variance can be calced either at z=0.0 or z=z.
+    double dlogsigdlogm= 0.5*(log(varM_TH_num(0.99*M,z))-log(varM_TH_num(1.01*M,z)))/(log(0.99*M)-log(1.01*M));
+
+    double beta= 0.589*pow(1.+z, 0.20);
+    double phi =-0.729*pow(1.+z,-0.08);
+    double eta =-0.243*pow(1.+z, 0.27);
+    double gama= 0.864*pow(1.+z,-0.01);
+
+    double result=alpTink*(1.+pow(beta*xnu,-2.*phi))*pow(xnu,2.0*eta);
+    result=result*exp(-gama*pow(xnu,2.0)/2.0);
+    result=result*xnu;
+    //printf("#DEBUG: %e %e %e %e ",M,result,fabs(dlogsigdlogm),xnu);
+    result=rho_crit_0*Omega0*result/pow(M,2.)*fabs(dlogsigdlogm);
+
+    //std::cout<<M<<" "<<result<<" "<<sig<<" "<<dlogsigdlogm<<" "<<alpTink/0.368<<std::endl;
+    
+    return result;
+
+}
+
+
 /// Tinker et al. 2010 mass function normalization. This is defines so that:
 //  \int_{0}^{\infty} f(\nu) d\nu = 1
 void cosmology::initTinker(double z)

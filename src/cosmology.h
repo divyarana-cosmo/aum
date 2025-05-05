@@ -301,6 +301,7 @@ class cosmology
     void initTinker(double);             // Initialise the normalization
     double MF_TI10(double,double);       // Tinker et al. 2010 mass function
     double bias_TI10(double, double);    // Tinker et al. 2010 bias
+    //double MF_TI10_dens_dep(double,double,double);       // Tinker et al. 2010 mass function
     
     double getzcoll(double);            // Redshift of collapse for a halo of mass M
     // double getmstar();                  // M* defined such that sigma(M*)=1.686
@@ -503,7 +504,8 @@ class cosmology
     double bias_TI10_wDelta(double M, double z, double Delta);
 
     double MF_TI09_500c(double M, double z);
-
+    
+    double MF_TI10_dens_dep(double,double,double);       // Tinker et al. 2010 mass function
 };
 
 /// This is from haloes.cpp
